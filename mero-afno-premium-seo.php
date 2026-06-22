@@ -57,7 +57,9 @@ register_activation_hook( __FILE__, 'activate_enterprise_seo' );
  * Initialize the GitHub Updater
  */
 require_once plugin_dir_path( __FILE__ ) . 'includes/updater/plugin-update-checker.php';
-$myUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$myUpdateChecker = PucFactory::buildUpdateChecker(
 	'https://github.com/rameshkhadka61/mero-afno-premium-seo/',
 	__FILE__,
 	'mero-afno-premium-seo'
