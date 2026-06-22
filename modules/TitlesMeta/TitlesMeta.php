@@ -120,7 +120,7 @@ class TitlesMeta {
                 // Enqueue Premium CSS
                 wp_enqueue_style( 'eseo-admin-css', plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/admin.css', [], '1.0.0' );
 
-                wp_enqueue_script( 'eseo-admin-js', plugin_dir_url( dirname( __DIR__ ) ) . 'assets/js/admin.js', [ 'jquery' ], '1.0.0', true );
+                wp_enqueue_script( 'eseo-admin-js', plugin_dir_url( dirname( __DIR__ ) ) . 'assets/js/admin.js', [ 'jquery' ], filemtime( plugin_dir_path( dirname( __DIR__ ) ) . 'assets/js/admin.js' ), true );
                 
                 // Pass variables to JS
                 wp_localize_script( 'eseo-admin-js', 'eseo_vars', [
