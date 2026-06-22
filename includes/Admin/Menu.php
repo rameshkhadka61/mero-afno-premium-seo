@@ -161,11 +161,12 @@ class Menu {
                     <tr valign="top">
                         <th scope="row">Gemini Model</th>
                         <td>
-                            <?php $g_model = get_option('eseo_gemini_model', 'gemini-1.5-flash'); ?>
+                            <?php $g_model = get_option('eseo_gemini_model', 'gemini-2.0-flash'); ?>
                             <select name="eseo_gemini_model">
-                                <option value="gemini-1.5-flash" <?php selected($g_model, 'gemini-1.5-flash'); ?>>Gemini 1.5 Flash (Fast & Cheap)</option>
-                                <option value="gemini-1.5-pro" <?php selected($g_model, 'gemini-1.5-pro'); ?>>Gemini 1.5 Pro (Most Powerful)</option>
-                                <option value="gemini-pro" <?php selected($g_model, 'gemini-pro'); ?>>Gemini 1.0 Pro</option>
+                                <option value="gemini-2.0-flash" <?php selected($g_model, 'gemini-2.0-flash'); ?>>Gemini 2.0 Flash (Latest & Fast)</option>
+                                <option value="gemini-2.0-pro" <?php selected($g_model, 'gemini-2.0-pro'); ?>>Gemini 2.0 Pro (Latest & Powerful)</option>
+                                <option value="gemini-1.5-flash" <?php selected($g_model, 'gemini-1.5-flash'); ?>>Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro" <?php selected($g_model, 'gemini-1.5-pro'); ?>>Gemini 1.5 Pro</option>
                             </select>
                         </td>
                     </tr>
