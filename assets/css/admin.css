@@ -168,3 +168,52 @@
     line-height: 1.58;
     word-wrap: break-word;
 }
+
+/* SERP Toggle Bar */
+.eseo-serp-toggle-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.eseo-serp-toggle-btn {
+    background: #f0f0f1;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px 4px 0 0;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #50575e;
+    transition: all 0.2s;
+}
+
+.eseo-serp-toggle-btn.active {
+    background: #fff;
+    border-bottom-color: #fff;
+    color: #1a73e8;
+    border-top: 2px solid #1a73e8;
+    margin-bottom: -1px;
+    z-index: 1;
+}
+
+/* Mobile View Mode */
+.eseo-serp-preview.mobile-view {
+    max-width: 320px;
+    border-radius: 16px;
+    border: 2px solid #ccd0d4;
+    padding: 16px;
+}
+
+.eseo-serp-preview.mobile-view .eseo-serp-title {
+    font-size: 16px;
+}
+
+.eseo-serp-preview.mobile-view .eseo-serp-url {
+    font-size: 12px;
+}
+
+.eseo-serp-preview.mobile-view .eseo-serp-desc {
+    font-size: 13px;
+}

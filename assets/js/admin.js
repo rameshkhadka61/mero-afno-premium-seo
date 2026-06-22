@@ -146,6 +146,18 @@ jQuery(document).ready(function($) {
     $keyword.on('input', analyzeSEO);
     $('#title').on('input', analyzeSEO); // Default WP title
 
+    // SERP Preview: Desktop / Mobile Toggle
+    $('#eseo-serp-desktop-btn').on('click', function() {
+        $('#eseo-serp-preview-box').removeClass('mobile-view');
+        $('#eseo-serp-mobile-btn').removeClass('active');
+        $(this).addClass('active');
+    });
+    $('#eseo-serp-mobile-btn').on('click', function() {
+        $('#eseo-serp-preview-box').addClass('mobile-view');
+        $('#eseo-serp-desktop-btn').removeClass('active');
+        $(this).addClass('active');
+    });
+
     // For Gutenberg, listen to content changes
     if (typeof wp !== 'undefined' && wp.data) {
         wp.data.subscribe(function () {
