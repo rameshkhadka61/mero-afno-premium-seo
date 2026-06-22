@@ -92,7 +92,7 @@ class Menu {
         register_setting( 'eseo_ai_options', 'eseo_openai_key' );
         register_setting( 'eseo_ai_options', 'eseo_openai_model' );
         register_setting( 'eseo_ai_options', 'eseo_gemini_key' );
-        register_setting( 'eseo_ai_options', 'eseo_gemini_model' );
+        register_setting( 'eseo_ai_options', 'eseo_g_model_name' );
         register_setting( 'eseo_ai_options', 'eseo_preferred_ai_engine' );
         register_setting( 'eseo_ai_options', 'eseo_modules_disabled', [
             'type' => 'array',
@@ -693,8 +693,8 @@ class Menu {
                     <tr valign="top">
                         <th scope="row">Gemini Model</th>
                         <td>
-                            <?php $g_model = get_option('eseo_gemini_model', 'gemini-3.5-flash'); ?>
-                            <select name="eseo_gemini_model">
+                            <?php $g_model = get_option('eseo_g_model_name', 'gemini-pro'); ?>
+                            <select name="eseo_g_model_name">
                                 <option value="gemini-3.5-flash" <?php selected($g_model, 'gemini-3.5-flash'); ?>>Gemini 3.5 Flash (Latest & Fast)</option>
                                 <option value="gemini-3.1-pro" <?php selected($g_model, 'gemini-3.1-pro'); ?>>Gemini 3.1 Pro (Latest & Powerful)</option>
                                 <option value="gemini-2.0-flash" <?php selected($g_model, 'gemini-2.0-flash'); ?>>Gemini 2.0 Flash</option>
