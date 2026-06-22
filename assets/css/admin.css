@@ -1,0 +1,129 @@
+/* Enterprise SEO Admin Styles */
+
+.eseo-meta-box-container {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: #3c434a;
+}
+
+.eseo-field {
+    margin-bottom: 20px;
+}
+
+.eseo-field label {
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+
+.eseo-field input[type="text"],
+.eseo-field textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.07) inset;
+    font-size: 14px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.eseo-field input[type="text"]:focus,
+.eseo-field textarea:focus {
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+    outline: none;
+}
+
+.eseo-ai-btn {
+    background: #f0f0f1;
+    border: 1px solid #0a4b78;
+    color: #0a4b78;
+    border-radius: 4px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.eseo-ai-btn:hover {
+    background: #e6f0f9;
+    border-color: #0a4b78;
+}
+
+/* Character Counter Progress Bars */
+.eseo-progress-container {
+    width: 100%;
+    height: 4px;
+    background: #e2e4e7;
+    border-radius: 2px;
+    margin-top: 6px;
+    overflow: hidden;
+}
+
+.eseo-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #00a32a;
+    transition: width 0.3s, background-color 0.3s;
+}
+
+.eseo-progress-bar.warning {
+    background: #dba617;
+}
+
+.eseo-progress-bar.danger {
+    background: #d63638;
+}
+
+/* Realtime Analyzer Box */
+#eseo-realtime-analyzer {
+    background: #f8f9f9;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    padding: 20px;
+    margin-top: 25px;
+}
+
+#eseo-realtime-analyzer h4 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 15px;
+    border-bottom: 1px solid #e2e4e7;
+    padding-bottom: 10px;
+}
+
+#eseo-analysis-results li {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #50575e;
+}
+
+/* Dashboard Styles */
+.eseo-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.eseo-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+}
+
+.eseo-card h2 {
+    margin-top: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #f0f0f1;
+    padding-bottom: 10px;
+}
+
+.eseo-stat {
+    font-size: 32px;
+    font-weight: bold;
+    color: #2271b1;
+    margin: 10px 0;
+}

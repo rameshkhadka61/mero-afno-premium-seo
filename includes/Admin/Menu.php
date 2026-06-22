@@ -1,0 +1,166 @@
+<?php
+
+namespace ESEO\Admin;
+
+class Menu {
+
+    public function init() {
+        add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
+        add_action( 'admin_init', [ $this, 'register_settings' ] );
+    }
+
+    public function register_admin_menu() {
+        add_menu_page(
+            'Mero Afno Premium SEO',
+            'Mero Afno Premium SEO',
+            'manage_options',
+            'enterprise-seo',
+            [ $this, 'render_dashboard' ],
+            'dashicons-chart-line',
+            80
+        );
+
+        add_submenu_page(
+            'enterprise-seo',
+            'Dashboard',
+            'Dashboard',
+            'manage_options',
+            'enterprise-seo',
+            [ $this, 'render_dashboard' ]
+        );
+
+        add_submenu_page(
+            'enterprise-seo',
+            'AI Settings',
+            'AI Settings',
+            'manage_options',
+            'eseo-ai-settings',
+            [ $this, 'render_ai_settings' ]
+        );
+    }
+
+    public function register_settings() {
+        register_setting( 'eseo_ai_options', 'eseo_openai_key' );
+        register_setting( 'eseo_ai_options', 'eseo_gemini_key' );
+        register_setting( 'eseo_ai_options', 'eseo_modules_disabled', [
+            'type' => 'array',
+            'default' => []
+        ]);
+    }
+
+    public function render_dashboard() {
+        global $wpdb;
+
+        // Fetch dynamic stats safely
+        $redirects_table = $wpdb->prefix . 'eseo_redirects';
+        $links_table = $wpdb->prefix . 'eseo_links';
+
+        $total_redirects = 0;
+        if ( $wpdb->get_var("SHOW TABLES LIKE '$redirects_table'") === $redirects_table ) {
+            $total_redirects = $wpdb->get_var("SELECT SUM(hits) FROM $redirects_table");
+        }
+
+        $total_links = 0;
+        if ( $wpdb->get_var("SHOW TABLES LIKE '$links_table'") === $links_table ) {
+            $total_links = $wpdb->get_var("SELECT COUNT(*) FROM $links_table");
+        }
+
+        ?>
+        <div class="wrap" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;">
+            <h1>Mero Afno Premium SEO Dashboard</h1>
+            <p>Welcome to your site's SEO control center.</p>
+
+            <div class="eseo-dashboard-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:20px; margin-top:20px;">
+                
+                <div class="eseo-card" style="background:#fff; border:1px solid #ccd0d4; border-radius:6px; padding:20px;">
+                    <h2 style="margin-top:0; border-bottom:1px solid #f0f0f1; padding-bottom:10px;">Traffic Saved</h2>
+                    <div class="eseo-stat" style="font-size:32px; font-weight:bold; color:#0a4b78; margin:10px 0;">
+                        <?php echo number_format_i18n( (int) $total_redirects ); ?>
+                    </div>
+                    <p class="description">404 errors successfully intercepted and redirected.</p>
+                </div>
+
+                <div class="eseo-card" style="background:#fff; border:1px solid #ccd0d4; border-radius:6px; padding:20px;">
+                    <h2 style="margin-top:0; border-bottom:1px solid #f0f0f1; padding-bottom:10px;">Content Links Audited</h2>
+                    <div class="eseo-stat" style="font-size:32px; font-weight:bold; color:#00a32a; margin:10px 0;">
+                        <?php echo number_format_i18n( (int) $total_links ); ?>
+                    </div>
+                    <p class="description">Internal and external links being monitored.</p>
+                </div>
+
+                <div class="eseo-card" style="background:#fff; border:1px solid #ccd0d4; border-radius:6px; padding:20px;">
+                    <h2 style="margin-top:0; border-bottom:1px solid #f0f0f1; padding-bottom:10px;">System Status</h2>
+                    <ul style="list-style-type:none; padding-left:0; margin-bottom:0;">
+                        <li style="margin-bottom:8px;">✅ Sitemap Generator (Cached)</li>
+                        <li style="margin-bottom:8px;">✅ JSON-LD Article Schema</li>
+                        <li style="margin-bottom:8px;">✅ Background Content Audit</li>
+                        <li style="margin-bottom:0;">✅ Performance Optimization</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <?php
+    }
+
+    public function render_ai_settings() {
+        $disabled_modules = get_option( 'eseo_modules_disabled', [] );
+        if ( ! is_array( $disabled_modules ) ) {
+            $disabled_modules = [];
+        }
+        ?>
+        <div class="wrap">
+            <h1>Mero Afno Premium SEO Settings</h1>
+            <p>Configure your API keys and toggle plugin features.</p>
+            <form method="post" action="options.php">
+                <?php settings_fields( 'eseo_ai_options' ); ?>
+                <?php do_settings_sections( 'eseo_ai_options' ); ?>
+                
+                <h2>API Keys</h2>
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row">OpenAI API Key</th>
+                        <td>
+                            <input type="password" name="eseo_openai_key" value="<?php echo esc_attr( get_option('eseo_openai_key') ); ?>" class="regular-text" />
+                            <p class="description">Required for GPT-3.5 meta generation.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Gemini API Key</th>
+                        <td>
+                            <input type="password" name="eseo_gemini_key" value="<?php echo esc_attr( get_option('eseo_gemini_key') ); ?>" class="regular-text" />
+                            <p class="description">Alternative engine for content analysis.</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2>Module Toggles</h2>
+                <p>Check the box to <strong>disable</strong> a module you do not need.</p>
+                <table class="form-table">
+                    <?php 
+                    $modules = [
+                        'sitemap' => 'XML Sitemaps',
+                        'schema' => 'JSON-LD Article Schema',
+                        'redirects' => '404 Redirect Manager',
+                        'content_audit' => 'Link Content Audit',
+                        'social_seo' => 'Social SEO (OpenGraph)',
+                        'local_seo' => 'Local SEO',
+                        'woo_seo' => 'WooCommerce SEO',
+                        'performance' => 'Performance Optimizer'
+                    ];
+                    
+                    foreach ( $modules as $key => $label ) {
+                        $checked = in_array( $key, $disabled_modules ) ? 'checked="checked"' : '';
+                        echo '<tr valign="top">';
+                        echo '<th scope="row">' . esc_html( $label ) . '</th>';
+                        echo '<td><label><input type="checkbox" name="eseo_modules_disabled[]" value="' . esc_attr( $key ) . '" ' . $checked . ' /> Disable</label></td>';
+                        echo '</tr>';
+                    }
+                    ?>
+                </table>
+                <?php submit_button(); ?>
+            </form>
+        </div>
+        <?php
+    }
+}
