@@ -42,6 +42,7 @@ class Menu {
     public function register_settings() {
         register_setting( 'eseo_ai_options', 'eseo_openai_key' );
         register_setting( 'eseo_ai_options', 'eseo_gemini_key' );
+        register_setting( 'eseo_ai_options', 'eseo_preferred_ai_engine' );
         register_setting( 'eseo_ai_options', 'eseo_modules_disabled', [
             'type' => 'array',
             'default' => []
@@ -119,17 +120,29 @@ class Menu {
                 <h2>API Keys</h2>
                 <table class="form-table">
                     <tr valign="top">
+                        <th scope="row">Preferred AI Engine</th>
+                        <td>
+                            <?php $preferred = get_option('eseo_preferred_ai_engine', 'smart'); ?>
+                            <select name="eseo_preferred_ai_engine">
+                                <option value="smart" <?php selected($preferred, 'smart'); ?>>Smart Routing (Recommended)</option>
+                                <option value="openai" <?php selected($preferred, 'openai'); ?>>OpenAI Only</option>
+                                <option value="gemini" <?php selected($preferred, 'gemini'); ?>>Gemini Only</option>
+                            </select>
+                            <p class="description">Select which AI engine to use for generating content. Smart routing uses Gemini for keywords and OpenAI for descriptions.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
                         <th scope="row">OpenAI API Key</th>
                         <td>
                             <input type="password" name="eseo_openai_key" value="<?php echo esc_attr( get_option('eseo_openai_key') ); ?>" class="regular-text" />
-                            <p class="description">Required for GPT-3.5 meta generation.</p>
+                            <p class="description">Required if OpenAI is selected.</p>
                         </td>
                     </tr>
                     <tr valign="top">
                         <th scope="row">Gemini API Key</th>
                         <td>
                             <input type="password" name="eseo_gemini_key" value="<?php echo esc_attr( get_option('eseo_gemini_key') ); ?>" class="regular-text" />
-                            <p class="description">Alternative engine for content analysis.</p>
+                            <p class="description">Required if Gemini is selected.</p>
                         </td>
                     </tr>
                 </table>
