@@ -147,7 +147,13 @@ jQuery(document).ready(function($) {
                         $desc.val(response.data).trigger('input');
                     }
                 } else {
-                    alert('Error: ' + response.data);
+                    if (response.data && response.data.code === 'no_api_key') {
+                        if (confirm(response.data.message + '\n\nClick OK to go to settings.')) {
+                            window.location.href = 'admin.php?page=eseo-ai-settings';
+                        }
+                    } else {
+                        alert('Error: ' + (response.data.message || response.data));
+                    }
                 }
             },
             error: function() {

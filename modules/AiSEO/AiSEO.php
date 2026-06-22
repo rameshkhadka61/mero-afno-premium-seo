@@ -22,7 +22,10 @@ class AiSEO {
         $openai_key = get_option( 'eseo_openai_key' );
 
         if ( empty( $openai_key ) ) {
-            wp_send_json_error( 'Please configure your OpenAI API Key in the Enterprise SEO Settings.' );
+            wp_send_json_error( [
+                'code' => 'no_api_key',
+                'message' => 'Please configure your OpenAI API Key in the Enterprise SEO Settings.'
+            ] );
         }
 
         $prompt = '';
