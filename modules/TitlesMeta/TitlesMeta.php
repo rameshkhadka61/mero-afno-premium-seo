@@ -75,11 +75,21 @@ class TitlesMeta {
                 <textarea id="eseo_meta_description" name="eseo_meta_description" rows="3" style="width:100%; margin-top: 5px;"><?php echo esc_textarea( $desc ); ?></textarea>
             </div>
             
-            <div id="eseo-realtime-analyzer" style="border: 1px solid #ccd0d4; padding: 15px; background: #fff;">
-                <h4>Real-Time SEO Analysis</h4>
-                <ul id="eseo-analysis-results" style="list-style-type: disc; margin-left: 20px;">
-                    <li>Type to start analyzing...</li>
+            <div class="eseo-field">
+                <label><strong>Real-Time SEO Analysis</strong></label>
+                <ul id="eseo-analysis-results" style="background:#f8f9fa; padding:15px; border-radius:4px; border:1px solid #ccd0d4; margin-top:5px;">
+                    <li>⏳ Analyzing...</li>
                 </ul>
+            </div>
+
+            <!-- SERP Preview Block -->
+            <div class="eseo-field">
+                <label><strong>Google Search Preview</strong></label>
+                <div class="eseo-serp-preview">
+                    <div class="eseo-serp-url" id="eseo-serp-url-preview"><?php echo esc_url( get_site_url() ); ?>/your-post-url/</div>
+                    <div class="eseo-serp-title" id="eseo-serp-title-preview">Your Post Title Here - <?php echo esc_html( get_bloginfo('name') ); ?></div>
+                    <div class="eseo-serp-desc" id="eseo-serp-desc-preview">Please provide a meta description. If you don't, Google will try to find a relevant part of your post to show in the search results.</div>
+                </div>
             </div>
         </div>
         <?php
@@ -128,7 +138,8 @@ class TitlesMeta {
                 // Pass variables to JS
                 wp_localize_script( 'eseo-admin-js', 'eseo_vars', [
                     'ajax_url' => admin_url( 'admin-ajax.php' ),
-                    'ai_nonce' => wp_create_nonce( 'eseo_ai_nonce' )
+                    'ai_nonce' => wp_create_nonce( 'eseo_ai_nonce' ),
+                    'site_url' => esc_url( get_site_url() ),
                 ]);
             }
         }

@@ -23,6 +23,37 @@ jQuery(document).ready(function($) {
         }
     }
     
+    // SERP Preview Elements
+    const $serpTitle = $('#eseo-serp-title-preview');
+    const $serpDesc  = $('#eseo-serp-desc-preview');
+    const $serpUrl   = $('#eseo-serp-url-preview');
+
+    function updateSerpPreview(titleVal, descVal) {
+        // Title: use SEO title, fall back to WP post title
+        let displayTitle = titleVal;
+        if (!displayTitle) {
+            if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
+                displayTitle = wp.data.select('core/editor').getEditedPostAttribute('title') || '';
+            }
+            if (!displayTitle) displayTitle = $('#title').val() || '';
+        }
+        $serpTitle.text(displayTitle || 'Your Post Title Here');
+
+        // Description: use meta desc, show placeholder if empty
+        $serpDesc.text(descVal || 'Please provide a meta description. If you don\'t, Google will try to find a relevant part of your post to show in the search results.');
+
+        // URL: use current post permalink if available
+        let slug = '';
+        if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
+            slug = wp.data.select('core/editor').getEditedPostAttribute('slug') || '';
+        }
+        if (!slug) {
+            const titleForSlug = displayTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            slug = titleForSlug;
+        }
+        $serpUrl.text(eseo_vars.site_url + '/' + slug + '/');
+    }
+
     function analyzeSEO() {
         let resultsHTML = '';
         const keywordVal = $keyword.val() ? $keyword.val().trim().toLowerCase() : '';
@@ -33,6 +64,9 @@ jQuery(document).ready(function($) {
         // Update progress bars
         updateProgressBar($('#eseo-title-progress'), titleVal.length, 60, 50);
         updateProgressBar($('#eseo-desc-progress'), descVal.length, 160, 140);
+
+        // Update SERP preview
+        updateSerpPreview(titleVal, descVal);
         
         if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
             // Gutenberg
@@ -45,6 +79,22 @@ jQuery(document).ready(function($) {
             } else if ($content.length) {
                 contentVal = $content.val();
             }
+        }
+
+        // Featured Image Check
+        let hasFeaturedImage = false;
+        if (typeof wp !== 'undefined' && wp.data && wp.data.select('core/editor')) {
+            const featuredImageId = wp.data.select('core/editor').getEditedPostAttribute('featured_media');
+            hasFeaturedImage = featuredImageId && featuredImageId > 0;
+        } else {
+            // Classic editor
+            hasFeaturedImage = $('#_thumbnail_id').length && parseInt($('#_thumbnail_id').val()) > 0;
+        }
+
+        if (hasFeaturedImage) {
+            resultsHTML += '<li style="color:green;">✅ Post has a featured image set.</li>';
+        } else {
+            resultsHTML += '<li style="color:red;">❌ No featured image set. Google may not show a rich result.</li>';
         }
 
         if (!keywordVal) {
