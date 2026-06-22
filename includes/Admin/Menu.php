@@ -37,6 +37,15 @@ class Menu {
             'eseo-ai-settings',
             [ $this, 'render_ai_settings' ]
         );
+
+        add_submenu_page(
+            'enterprise-seo',
+            'Indexing API',
+            'Indexing API',
+            'manage_options',
+            'eseo-indexing-settings',
+            [ $this, 'render_indexing_settings' ]
+        );
     }
 
     public function register_settings() {
@@ -49,6 +58,9 @@ class Menu {
             'type' => 'array',
             'default' => []
         ]);
+
+        register_setting( 'eseo_indexing_options', 'eseo_google_indexing_key' );
+        register_setting( 'eseo_indexing_options', 'eseo_bing_api_key' );
     }
 
     public function render_dashboard() {
@@ -186,7 +198,9 @@ class Menu {
                         'social_seo' => 'Social SEO (OpenGraph)',
                         'local_seo' => 'Local SEO',
                         'woo_seo' => 'WooCommerce SEO',
-                        'performance' => 'Performance Optimizer'
+                        'performance' => 'Performance Optimizer',
+                        'indexing' => 'Indexing API',
+                        'image_seo' => 'Image SEO Automation'
                     ];
                     
                     foreach ( $modules as $key => $label ) {
@@ -197,6 +211,48 @@ class Menu {
                         echo '</tr>';
                     }
                     ?>
+                </table>
+                <?php submit_button(); ?>
+            </form>
+        </div>
+        <?php
+    }
+
+    public function render_indexing_settings() {
+        ?>
+        <div class="wrap">
+            <h1>Indexing API Settings</h1>
+            <p>Configure automatic fast indexing for Google and Bing. When you publish or update a post, this plugin will instantly ping search engines.</p>
+            <form method="post" action="options.php">
+                <?php settings_fields( 'eseo_indexing_options' ); ?>
+                <?php do_settings_sections( 'eseo_indexing_options' ); ?>
+                
+                <table class="form-table">
+                    <tr valign="top">
+                        <th scope="row">Google Indexing API (JSON Key)</th>
+                        <td>
+                            <textarea name="eseo_google_indexing_key" rows="8" class="large-text code"><?php echo esc_textarea( get_option('eseo_google_indexing_key') ); ?></textarea>
+                            <p class="description">Paste the entire contents of your Google Cloud Service Account JSON file here.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Bing Webmaster API Key</th>
+                        <td>
+                            <input type="password" name="eseo_bing_api_key" value="<?php echo esc_attr( get_option('eseo_bing_api_key') ); ?>" class="regular-text" />
+                            <p class="description">Get this from your Bing Webmaster Tools -> Settings -> API Access.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row">Status</th>
+                        <td>
+                            <?php 
+                            $last_google = get_option('eseo_last_google_ping');
+                            $last_bing = get_option('eseo_last_bing_ping');
+                            ?>
+                            <p><strong>Last Google Ping:</strong> <?php echo $last_google ? date('Y-m-d H:i:s', $last_google) : 'Never'; ?></p>
+                            <p><strong>Last Bing Ping:</strong> <?php echo $last_bing ? date('Y-m-d H:i:s', $last_bing) : 'Never'; ?></p>
+                        </td>
+                    </tr>
                 </table>
                 <?php submit_button(); ?>
             </form>

@@ -95,6 +95,17 @@ class Plugin {
             $performance = new \ESEO\Modules\Performance\Performance();
             $performance->init();
         }
+
+        if ( ! in_array( 'indexing', $disabled_modules ) ) {
+            $indexing = new \ESEO\Modules\Indexing\Indexing();
+            $indexing->init();
+            add_action( 'eseo_ping_search_engines', [ '\ESEO\Modules\Indexing\Indexing', 'execute_ping' ], 10, 2 );
+        }
+
+        if ( ! in_array( 'image_seo', $disabled_modules ) ) {
+            $image_seo = new \ESEO\Modules\ImageSEO\ImageSEO();
+            $image_seo->init();
+        }
     }
 
 	public function run() {
