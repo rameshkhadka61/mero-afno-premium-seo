@@ -699,8 +699,8 @@ class Menu {
                                 <option value="gemini-3.1-pro" <?php selected($g_model, 'gemini-3.1-pro'); ?>>Gemini 3.1 Pro (Latest & Powerful)</option>
                                 <option value="gemini-2.0-flash" <?php selected($g_model, 'gemini-2.0-flash'); ?>>Gemini 2.0 Flash</option>
                                 <option value="gemini-2.0-pro" <?php selected($g_model, 'gemini-2.0-pro'); ?>>Gemini 2.0 Pro</option>
-                                <option value="gemini-1.5-flash" <?php selected($g_model, 'gemini-1.5-flash'); ?>>Gemini 1.5 Flash</option>
-                                <option value="gemini-1.5-pro" <?php selected($g_model, 'gemini-1.5-pro'); ?>>Gemini 1.5 Pro</option>
+                                <option value="gemini-1.5-flash-latest" <?php selected($g_model, 'gemini-1.5-flash-latest'); ?>>Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro-latest" <?php selected($g_model, 'gemini-1.5-pro-latest'); ?>>Gemini 1.5 Pro</option>
                             </select>
                         </td>
                     </tr>
