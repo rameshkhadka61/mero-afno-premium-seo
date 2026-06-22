@@ -499,28 +499,48 @@ class Menu {
                                     <div class="eseo-score-dot" style="background:#7ad03a;"></div> Good 
                                     <span class="eseo-score-count"><?php echo esc_html($seo_scores['good']); ?></span>
                                 </div>
-                                <a href="<?php echo admin_url('edit.php'); ?>" class="eseo-score-view">View</a>
+                                <select onchange="if(this.value) window.location.href=this.value" class="eseo-score-view" style="max-width:120px;">
+                                    <option value="">View...</option>
+                                    <?php foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $pt ) : if ( $pt->name === 'attachment' ) continue; ?>
+                                        <option value="<?php echo esc_attr( admin_url("edit.php?post_type={$pt->name}&seo_filter=good") ); ?>"><?php echo esc_html($pt->labels->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </li>
                             <li>
                                 <div class="eseo-score-label">
                                     <div class="eseo-score-dot" style="background:#e88a31;"></div> OK 
                                     <span class="eseo-score-count"><?php echo esc_html($seo_scores['ok']); ?></span>
                                 </div>
-                                <a href="<?php echo admin_url('edit.php'); ?>" class="eseo-score-view">View</a>
+                                <select onchange="if(this.value) window.location.href=this.value" class="eseo-score-view" style="max-width:120px;">
+                                    <option value="">View...</option>
+                                    <?php foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $pt ) : if ( $pt->name === 'attachment' ) continue; ?>
+                                        <option value="<?php echo esc_attr( admin_url("edit.php?post_type={$pt->name}&seo_filter=ok") ); ?>"><?php echo esc_html($pt->labels->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </li>
                             <li>
                                 <div class="eseo-score-label">
                                     <div class="eseo-score-dot" style="background:#dc3232;"></div> Needs improvement 
                                     <span class="eseo-score-count"><?php echo esc_html($seo_scores['needs_improvement']); ?></span>
                                 </div>
-                                <a href="<?php echo admin_url('edit.php'); ?>" class="eseo-score-view">View</a>
+                                <select onchange="if(this.value) window.location.href=this.value" class="eseo-score-view" style="max-width:120px;">
+                                    <option value="">View...</option>
+                                    <?php foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $pt ) : if ( $pt->name === 'attachment' ) continue; ?>
+                                        <option value="<?php echo esc_attr( admin_url("edit.php?post_type={$pt->name}&seo_filter=needs_improvement") ); ?>"><?php echo esc_html($pt->labels->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </li>
                             <li>
                                 <div class="eseo-score-label">
                                     <div class="eseo-score-dot" style="background:#dcdde0;"></div> Not analyzed 
                                     <span class="eseo-score-count"><?php echo esc_html($seo_scores['not_analyzed']); ?></span>
                                 </div>
-                                <a href="<?php echo admin_url('edit.php'); ?>" class="eseo-score-view">View</a>
+                                <select onchange="if(this.value) window.location.href=this.value" class="eseo-score-view" style="max-width:120px;">
+                                    <option value="">View...</option>
+                                    <?php foreach ( get_post_types( [ 'public' => true ], 'objects' ) as $pt ) : if ( $pt->name === 'attachment' ) continue; ?>
+                                        <option value="<?php echo esc_attr( admin_url("edit.php?post_type={$pt->name}&seo_filter=not_analyzed") ); ?>"><?php echo esc_html($pt->labels->name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </li>
                         </ul>
                         <div class="eseo-chart-container">

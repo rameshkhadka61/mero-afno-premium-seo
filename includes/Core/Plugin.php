@@ -118,6 +118,9 @@ class Plugin {
             $titles_settings = new \ESEO\Modules\TitlesMeta\Settings();
             $titles_settings->init();
 
+            $post_list = new \ESEO\Modules\TitlesMeta\PostList();
+            $post_list->init();
+
             $schema_settings = new \ESEO\Modules\Schema\Settings();
             $schema_settings->init();
         }
