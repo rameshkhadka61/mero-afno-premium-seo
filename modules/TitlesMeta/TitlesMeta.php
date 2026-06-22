@@ -30,6 +30,9 @@ class TitlesMeta {
         register_meta( 'post', '_eseo_meta_title', $meta_args );
         register_meta( 'post', '_eseo_meta_description', $meta_args );
         register_meta( 'post', '_eseo_focus_keyword', $meta_args );
+        register_meta( 'post', '_eseo_canonical_url', $meta_args );
+        register_meta( 'post', '_eseo_meta_robots_index', $meta_args );
+        register_meta( 'post', '_eseo_meta_robots_follow', $meta_args );
     }
 
     public function add_seo_meta_box() {
@@ -52,6 +55,9 @@ class TitlesMeta {
         $title = get_post_meta( $post->ID, '_eseo_meta_title', true );
         $desc = get_post_meta( $post->ID, '_eseo_meta_description', true );
         $keyword = get_post_meta( $post->ID, '_eseo_focus_keyword', true );
+        $canonical = get_post_meta( $post->ID, '_eseo_canonical_url', true );
+        $robots_index = get_post_meta( $post->ID, '_eseo_meta_robots_index', true );
+        $robots_follow = get_post_meta( $post->ID, '_eseo_meta_robots_follow', true );
 
         ?>
         <div class="eseo-meta-box-container" style="display:flex; flex-direction:column; gap:15px;">
@@ -95,6 +101,35 @@ class TitlesMeta {
                     <div class="eseo-serp-desc" id="eseo-serp-desc-preview">Please provide a meta description. If you don't, Google will try to find a relevant part of your post to show in the search results.</div>
                 </div>
             </div>
+
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ccd0d4;">
+            
+            <div class="eseo-field">
+                <h3 style="margin-top: 0;">Advanced SEO</h3>
+                <label for="eseo_canonical_url"><strong>Canonical URL</strong></label>
+                <br>
+                <input type="url" id="eseo_canonical_url" name="eseo_canonical_url" value="<?php echo esc_attr( $canonical ); ?>" style="width:100%; margin-top: 5px;" placeholder="Leave empty to use default permalink" />
+            </div>
+
+            <div class="eseo-field" style="display:flex; gap:20px; margin-top: 10px;">
+                <div style="flex:1;">
+                    <label for="eseo_meta_robots_index"><strong>Meta Robots Index</strong></label>
+                    <select id="eseo_meta_robots_index" name="eseo_meta_robots_index" style="width:100%; margin-top: 5px;">
+                        <option value="default" <?php selected($robots_index, 'default'); ?>>Default (Index)</option>
+                        <option value="noindex" <?php selected($robots_index, 'noindex'); ?>>NoIndex</option>
+                        <option value="index" <?php selected($robots_index, 'index'); ?>>Index</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label for="eseo_meta_robots_follow"><strong>Meta Robots Follow</strong></label>
+                    <select id="eseo_meta_robots_follow" name="eseo_meta_robots_follow" style="width:100%; margin-top: 5px;">
+                        <option value="default" <?php selected($robots_follow, 'default'); ?>>Default (Follow)</option>
+                        <option value="nofollow" <?php selected($robots_follow, 'nofollow'); ?>>NoFollow</option>
+                        <option value="follow" <?php selected($robots_follow, 'follow'); ?>>Follow</option>
+                    </select>
+                </div>
+            </div>
+
         </div>
         <?php
     }
@@ -124,6 +159,15 @@ class TitlesMeta {
         }
         if ( isset( $_POST['eseo_focus_keyword'] ) ) {
             update_post_meta( $post_id, '_eseo_focus_keyword', sanitize_text_field( $_POST['eseo_focus_keyword'] ) );
+        }
+        if ( isset( $_POST['eseo_canonical_url'] ) ) {
+            update_post_meta( $post_id, '_eseo_canonical_url', sanitize_url( $_POST['eseo_canonical_url'] ) );
+        }
+        if ( isset( $_POST['eseo_meta_robots_index'] ) ) {
+            update_post_meta( $post_id, '_eseo_meta_robots_index', sanitize_text_field( $_POST['eseo_meta_robots_index'] ) );
+        }
+        if ( isset( $_POST['eseo_meta_robots_follow'] ) ) {
+            update_post_meta( $post_id, '_eseo_meta_robots_follow', sanitize_text_field( $_POST['eseo_meta_robots_follow'] ) );
         }
     }
 
@@ -174,6 +218,32 @@ class TitlesMeta {
             if ( ! empty( $custom_desc ) ) {
                 $parsed_desc = $this->parse_variables( $custom_desc, $post_id );
                 echo '<meta name="description" content="' . esc_attr( $parsed_desc ) . '" />' . "\n";
+            }
+
+            // Output Canonical URL
+            $canonical = get_post_meta( $post_id, '_eseo_canonical_url', true );
+            if ( ! empty( $canonical ) ) {
+                // Remove default WP canonical
+                remove_action( 'wp_head', 'rel_canonical' );
+                echo '<link rel="canonical" href="' . esc_url( $canonical ) . '" />' . "\n";
+            }
+
+            // Output Meta Robots
+            $robots_index = get_post_meta( $post_id, '_eseo_meta_robots_index', true );
+            $robots_follow = get_post_meta( $post_id, '_eseo_meta_robots_follow', true );
+            
+            $robots = [];
+            if ( ! empty( $robots_index ) && $robots_index !== 'default' ) {
+                $robots[] = $robots_index;
+            }
+            if ( ! empty( $robots_follow ) && $robots_follow !== 'default' ) {
+                $robots[] = $robots_follow;
+            }
+
+            if ( ! empty( $robots ) ) {
+                // If WordPress already output noindex (e.g. from global settings), be careful.
+                // But we are explicitly overriding it here.
+                echo '<meta name="robots" content="' . esc_attr( implode( ', ', $robots ) ) . '" />' . "\n";
             }
         }
     }

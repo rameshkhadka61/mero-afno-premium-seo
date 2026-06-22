@@ -70,14 +70,22 @@ class Menu {
         $redirects_table = $wpdb->prefix . 'eseo_redirects';
         $links_table = $wpdb->prefix . 'eseo_links';
 
-        $total_redirects = 0;
-        if ( $wpdb->get_var("SHOW TABLES LIKE '$redirects_table'") === $redirects_table ) {
-            $total_redirects = $wpdb->get_var("SELECT SUM(hits) FROM $redirects_table");
+        $total_redirects = get_transient( 'eseo_dashboard_redirects_count' );
+        if ( false === $total_redirects ) {
+            $total_redirects = 0;
+            if ( $wpdb->get_var("SHOW TABLES LIKE '$redirects_table'") === $redirects_table ) {
+                $total_redirects = (int) $wpdb->get_var("SELECT SUM(hits) FROM $redirects_table");
+            }
+            set_transient( 'eseo_dashboard_redirects_count', $total_redirects, 12 * HOUR_IN_SECONDS );
         }
 
-        $total_links = 0;
-        if ( $wpdb->get_var("SHOW TABLES LIKE '$links_table'") === $links_table ) {
-            $total_links = $wpdb->get_var("SELECT COUNT(*) FROM $links_table");
+        $total_links = get_transient( 'eseo_dashboard_links_count' );
+        if ( false === $total_links ) {
+            $total_links = 0;
+            if ( $wpdb->get_var("SHOW TABLES LIKE '$links_table'") === $links_table ) {
+                $total_links = (int) $wpdb->get_var("SELECT COUNT(*) FROM $links_table");
+            }
+            set_transient( 'eseo_dashboard_links_count', $total_links, 12 * HOUR_IN_SECONDS );
         }
 
         ?>
