@@ -115,7 +115,8 @@ class TitlesMeta {
         global $post;
 
         if ( $hook == 'post-new.php' || $hook == 'post.php' ) {
-            if ( 'post' === $post->post_type || 'page' === $post->post_type ) {
+            $public_post_types = get_post_types( [ 'public' => true ], 'names' );
+            if ( isset( $post->post_type ) && in_array( $post->post_type, $public_post_types ) ) {
                 
                 // Enqueue Premium CSS
                 wp_enqueue_style( 'eseo-admin-css', plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/admin.css', [], '1.0.0' );
