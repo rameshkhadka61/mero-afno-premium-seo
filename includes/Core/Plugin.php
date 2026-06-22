@@ -111,6 +111,9 @@ class Plugin {
         if ( is_admin() ) {
             $migration = new \ESEO\Modules\Tools\Migration();
             $migration->init();
+
+            $analytics = new \ESEO\Modules\Analytics\Analytics();
+            $analytics->init();
         }
     }
 

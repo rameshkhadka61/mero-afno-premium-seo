@@ -56,6 +56,16 @@ class Menu {
             'eseo-tools',
             [ $migration_module, 'render_tools_page' ]
         );
+
+        $analytics_module = new \ESEO\Modules\Analytics\Analytics();
+        add_submenu_page(
+            'enterprise-seo',
+            'Search Console',
+            'Search Console',
+            'manage_options',
+            'eseo-analytics',
+            [ $analytics_module, 'render_settings_page' ]
+        );
     }
 
     public function register_settings() {
@@ -130,6 +140,10 @@ class Menu {
             
             set_transient( 'eseo_dashboard_scores', $seo_scores, 12 * HOUR_IN_SECONDS );
         }
+
+        // Fetch GSC Data
+        $analytics = new \ESEO\Modules\Analytics\Analytics();
+        $gsc_data = $analytics->get_dashboard_data();
 
         ?>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -294,29 +308,34 @@ class Menu {
             <div class="eseo-header">
                 <h1>Mero Afno Premium SEO Dashboard</h1>
                 <p style="color: #50575e; margin: 0;">Monitor your search performance and site health.</p>
+                <?php if ( ! $gsc_data ) : ?>
+                    <div style="background:#fff; border-left:4px solid #e88a31; padding:12px; margin-top:15px; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                        <strong>Analytics Not Connected:</strong> The data below is mock data. <a href="<?php echo admin_url('admin.php?page=eseo-analytics'); ?>">Connect Google Search Console</a> to view real data.
+                    </div>
+                <?php endif; ?>
             </div>
 
             <div class="eseo-grid">
                 <!-- Metrics Card -->
                 <div class="eseo-card">
-                    <h2>Search Performance (Mock Data) <span class="info-icon">ⓘ</span></h2>
+                    <h2>Search Performance <?php echo $gsc_data ? '(Last 28 Days)' : '(Mock Data)'; ?> <span class="info-icon">ⓘ</span></h2>
                     <div class="eseo-metric-grid">
                         <div class="eseo-metric">
-                            <div class="eseo-metric-value">18</div>
+                            <div class="eseo-metric-value"><?php echo $gsc_data ? number_format_i18n($gsc_data['totals']['impressions']) : '18'; ?></div>
                             <div class="eseo-metric-label">Impressions</div>
-                            <div class="eseo-metric-trend">+100.00%</div>
+                            <?php if ( ! $gsc_data ) : ?><div class="eseo-metric-trend">+100.00%</div><?php endif; ?>
                         </div>
                         <div class="eseo-metric">
-                            <div class="eseo-metric-value">2</div>
+                            <div class="eseo-metric-value"><?php echo $gsc_data ? number_format_i18n($gsc_data['totals']['clicks']) : '2'; ?></div>
                             <div class="eseo-metric-label">Clicks</div>
-                            <div class="eseo-metric-trend">+100.00%</div>
+                            <?php if ( ! $gsc_data ) : ?><div class="eseo-metric-trend">+100.00%</div><?php endif; ?>
                         </div>
                         <div class="eseo-metric">
-                            <div class="eseo-metric-value">11.11%</div>
+                            <div class="eseo-metric-value"><?php echo $gsc_data ? number_format_i18n($gsc_data['totals']['ctr'], 2) . '%' : '11.11%'; ?></div>
                             <div class="eseo-metric-label">Average CTR</div>
                         </div>
                         <div class="eseo-metric">
-                            <div class="eseo-metric-value">14.83</div>
+                            <div class="eseo-metric-value"><?php echo $gsc_data ? number_format_i18n($gsc_data['totals']['position'], 2) : '14.83'; ?></div>
                             <div class="eseo-metric-label">Average position</div>
                         </div>
                     </div>
@@ -324,8 +343,8 @@ class Menu {
 
                 <!-- Sessions Chart Card -->
                 <div class="eseo-card">
-                    <h2>Organic sessions (Mock Data) <span class="info-icon">ⓘ</span></h2>
-                    <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;">16</div>
+                    <h2>Organic Clicks <?php echo $gsc_data ? '(Last 28 Days)' : '(Mock Data)'; ?> <span class="info-icon">ⓘ</span></h2>
+                    <div style="font-size: 24px; font-weight: bold; margin-bottom: 5px;"><?php echo $gsc_data ? number_format_i18n($gsc_data['totals']['clicks']) : '16'; ?></div>
                     <div style="font-size: 12px; color: #50575e; margin-bottom: 15px;">Last 28 days</div>
                     <div style="height: 150px;">
                         <canvas id="organicSessionsChart"></canvas>
@@ -336,7 +355,7 @@ class Menu {
             <div class="eseo-grid">
                 <!-- Top Content Card -->
                 <div class="eseo-card">
-                    <h2>Top 5 most popular content (Mock Data) <span class="info-icon">ⓘ</span></h2>
+                    <h2>Top 5 most popular content <?php echo $gsc_data ? '' : '(Mock Data)'; ?> <span class="info-icon">ⓘ</span></h2>
                     <table class="eseo-table">
                         <thead>
                             <tr>
@@ -348,48 +367,62 @@ class Menu {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>/</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">100.00%</td>
-                                <td style="text-align:right;">1.00</td>
-                            </tr>
-                            <tr>
-                                <td>/country/brunei-darussalam/</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">100.00%</td>
-                                <td style="text-align:right;">10.00</td>
-                            </tr>
-                            <tr>
-                                <td>/country/cote-divoire/</td>
-                                <td style="text-align:right;">0</td>
-                                <td style="text-align:right;">2</td>
-                                <td style="text-align:right;">0.00%</td>
-                                <td style="text-align:right;">8.00</td>
-                            </tr>
-                            <tr>
-                                <td>/country/dominica/</td>
-                                <td style="text-align:right;">0</td>
-                                <td style="text-align:right;">2</td>
-                                <td style="text-align:right;">0.00%</td>
-                                <td style="text-align:right;">6.00</td>
-                            </tr>
-                            <tr>
-                                <td>/radio_station/gumbo-94-9-fm/</td>
-                                <td style="text-align:right;">0</td>
-                                <td style="text-align:right;">12</td>
-                                <td style="text-align:right;">0.00%</td>
-                                <td style="text-align:right;">18.42</td>
-                            </tr>
+                            <?php if ( $gsc_data && !empty($gsc_data['top_pages']) ) : ?>
+                                <?php foreach ( $gsc_data['top_pages'] as $page ) : 
+                                    $ctr = ($page['impressions'] > 0) ? ($page['clicks'] / $page['impressions']) * 100 : 0;
+                                ?>
+                                    <tr>
+                                        <td><div style="max-width:200px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="<?php echo esc_attr($page['keys'][0]); ?>"><?php echo esc_html(str_replace(trailingslashit(get_site_url()), '/', $page['keys'][0])); ?></div></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($page['clicks']); ?></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($page['impressions']); ?></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($ctr, 2); ?>%</td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($page['position'], 2); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td>/</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">100.00%</td>
+                                    <td style="text-align:right;">1.00</td>
+                                </tr>
+                                <tr>
+                                    <td>/country/brunei-darussalam/</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">100.00%</td>
+                                    <td style="text-align:right;">10.00</td>
+                                </tr>
+                                <tr>
+                                    <td>/country/cote-divoire/</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">2</td>
+                                    <td style="text-align:right;">0.00%</td>
+                                    <td style="text-align:right;">8.00</td>
+                                </tr>
+                                <tr>
+                                    <td>/country/dominica/</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">2</td>
+                                    <td style="text-align:right;">0.00%</td>
+                                    <td style="text-align:right;">6.00</td>
+                                </tr>
+                                <tr>
+                                    <td>/radio_station/gumbo-94-9-fm/</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">12</td>
+                                    <td style="text-align:right;">0.00%</td>
+                                    <td style="text-align:right;">18.42</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Top Queries Card -->
                 <div class="eseo-card">
-                    <h2>Top 5 search queries (Mock Data) <span class="info-icon">ⓘ</span></h2>
+                    <h2>Top 5 search queries <?php echo $gsc_data ? '' : '(Mock Data)'; ?> <span class="info-icon">ⓘ</span></h2>
                     <table class="eseo-table">
                         <thead>
                             <tr>
@@ -401,20 +434,34 @@ class Menu {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>94.9 gumbo</td>
-                                <td style="text-align:right;">0</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">0.00%</td>
-                                <td style="text-align:right;">43.00</td>
-                            </tr>
-                            <tr>
-                                <td>94.9 radio live</td>
-                                <td style="text-align:right;">0</td>
-                                <td style="text-align:right;">1</td>
-                                <td style="text-align:right;">0.00%</td>
-                                <td style="text-align:right;">63.00</td>
-                            </tr>
+                            <?php if ( $gsc_data && !empty($gsc_data['top_queries']) ) : ?>
+                                <?php foreach ( $gsc_data['top_queries'] as $query ) : 
+                                    $ctr = ($query['impressions'] > 0) ? ($query['clicks'] / $query['impressions']) * 100 : 0;
+                                ?>
+                                    <tr>
+                                        <td><div style="max-width:150px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="<?php echo esc_attr($query['keys'][0]); ?>"><?php echo esc_html($query['keys'][0]); ?></div></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($query['clicks']); ?></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($query['impressions']); ?></td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($ctr, 2); ?>%</td>
+                                        <td style="text-align:right;"><?php echo number_format_i18n($query['position'], 2); ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <tr>
+                                    <td>94.9 gumbo</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">0.00%</td>
+                                    <td style="text-align:right;">43.00</td>
+                                </tr>
+                                <tr>
+                                    <td>94.9 radio live</td>
+                                    <td style="text-align:right;">0</td>
+                                    <td style="text-align:right;">1</td>
+                                    <td style="text-align:right;">0.00%</td>
+                                    <td style="text-align:right;">63.00</td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -467,15 +514,31 @@ class Menu {
 
         <script>
         document.addEventListener('DOMContentLoaded', function() {
+            <?php 
+            $labels_json = "['May 25', 'May 28', 'May 31', 'Jun 3', 'Jun 6', 'Jun 9', 'Jun 12', 'Jun 15', 'Jun 18', 'Jun 21']";
+            $data_json = "[0, 0, 0, 0, 0, 0, 1, 3, 1, 4, 0, 2, 0, 3]";
+            
+            if ( $gsc_data && !empty($gsc_data['time_series']) ) {
+                $labels = [];
+                $points = [];
+                foreach ( $gsc_data['time_series'] as $pt ) {
+                    $labels[] = date('M j', strtotime($pt['date']));
+                    $points[] = $pt['clicks'];
+                }
+                $labels_json = json_encode($labels);
+                $data_json = json_encode($points);
+            }
+            ?>
+            
             // Organic Sessions Chart
             const ctx1 = document.getElementById('organicSessionsChart').getContext('2d');
             new Chart(ctx1, {
                 type: 'line',
                 data: {
-                    labels: ['May 25', 'May 28', 'May 31', 'Jun 3', 'Jun 6', 'Jun 9', 'Jun 12', 'Jun 15', 'Jun 18', 'Jun 21'],
+                    labels: <?php echo $labels_json; ?>,
                     datasets: [{
-                        label: 'Organic sessions',
-                        data: [0, 0, 0, 0, 0, 0, 1, 3, 1, 4, 0, 2, 0, 3], // Mock points matching screenshot shape
+                        label: 'Organic clicks',
+                        data: <?php echo $data_json; ?>,
                         borderColor: '#a32375',
                         backgroundColor: 'rgba(163, 35, 117, 0.1)',
                         borderWidth: 2,
