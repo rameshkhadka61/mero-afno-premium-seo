@@ -166,6 +166,9 @@
 }
 
 .eseo-serp-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     flex: 1;
     min-width: 0;
 }
@@ -179,12 +182,13 @@
 }
 
 .eseo-serp-thumb {
-    width: 104px;
-    height: 104px;
+    width: 120px;
+    height: 120px;
     border-radius: 8px;
-    background-size: cover;
-    background-position: center;
-    background-color: #f0f0f1;
+    background-size: contain;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-color: transparent;
     flex-shrink: 0;
     border: 1px solid #dfe1e5;
 }
