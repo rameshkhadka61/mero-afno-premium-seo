@@ -88,7 +88,7 @@ class AiSEO {
                 $generated = trim( $data['choices'][0]['message']['content'], '"\'' );
                 wp_send_json_success( $generated );
             } else {
-                wp_send_json_error( 'Invalid OpenAI API Response.' );
+                wp_send_json_error( 'Invalid OpenAI API Response: ' . $body );
             }
         } else {
             // Gemini API
