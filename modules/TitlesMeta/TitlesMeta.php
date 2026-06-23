@@ -11,6 +11,7 @@ class TitlesMeta {
         add_action( 'init', [ $this, 'register_meta' ] );
 
         // Admin hooks for meta boxes and scripts
+        add_action( 'admin_init', [ $this, 'register_column_hooks' ] );
         add_action( 'add_meta_boxes', [ $this, 'add_seo_meta_box' ] );
         add_action( 'save_post', [ $this, 'save_seo_meta_box_data' ] );
         add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_scripts' ] );
@@ -33,6 +34,54 @@ class TitlesMeta {
         register_meta( 'post', '_eseo_canonical_url', $meta_args );
         register_meta( 'post', '_eseo_meta_robots_index', $meta_args );
         register_meta( 'post', '_eseo_meta_robots_follow', $meta_args );
+    }
+
+    public function register_column_hooks() {
+        $public_post_types = get_post_types( [ 'public' => true ], 'names' );
+        foreach ( $public_post_types as $post_type ) {
+            add_filter( "manage_{$post_type}_posts_columns", [ $this, 'add_seo_columns' ] );
+            add_action( "manage_{$post_type}_posts_custom_column", [ $this, 'render_seo_columns' ], 10, 2 );
+        }
+    }
+
+    public function add_seo_columns( $columns ) {
+        $columns['eseo_score'] = 'SEO Score';
+        $columns['eseo_keyword'] = 'Focus Keyword';
+        return $columns;
+    }
+
+    public function render_seo_columns( $column_name, $post_id ) {
+        if ( $column_name === 'eseo_keyword' ) {
+            $keyword = get_post_meta( $post_id, '_eseo_focus_keyword', true );
+            echo ! empty( $keyword ) ? esc_html( $keyword ) : '<span style="color:#a7aaad;">&mdash;</span>';
+        }
+
+        if ( $column_name === 'eseo_score' ) {
+            $title = get_post_meta( $post_id, '_eseo_meta_title', true );
+            $desc = get_post_meta( $post_id, '_eseo_meta_description', true );
+            $keyword = get_post_meta( $post_id, '_eseo_focus_keyword', true );
+
+            $score = 0;
+            if ( ! empty( $title ) ) $score++;
+            if ( ! empty( $desc ) ) $score++;
+            if ( ! empty( $keyword ) ) $score++;
+
+            $status_class = 'none';
+            $status_text = 'Not Analyzed';
+
+            if ( $score === 3 ) {
+                $status_class = 'good';
+                $status_text = 'Good';
+            } elseif ( $score === 2 ) {
+                $status_class = 'ok';
+                $status_text = 'OK';
+            } elseif ( $score === 1 ) {
+                $status_class = 'bad';
+                $status_text = 'Needs Improvement';
+            }
+
+            echo '<div class="eseo-score-indicator eseo-score-' . esc_attr( $status_class ) . '" title="' . esc_attr( $status_text ) . '"></div>';
+        }
     }
 
     public function add_seo_meta_box() {
@@ -193,6 +242,8 @@ class TitlesMeta {
                     'site_url' => esc_url( get_site_url() ),
                 ]);
             }
+        } elseif ( $hook == 'edit.php' ) {
+            wp_enqueue_style( 'eseo-admin-css', plugin_dir_url( dirname( __DIR__ ) ) . 'assets/css/admin.css', [], '1.0.0' );
         }
     }
 
