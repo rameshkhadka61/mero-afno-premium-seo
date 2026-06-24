@@ -173,6 +173,12 @@ class BulkSEO {
             }
         }
 
+        // Clean markdown backticks
+        $json_response = trim( $json_response );
+        $json_response = preg_replace('/^```json\s*/i', '', $json_response);
+        $json_response = preg_replace('/```\s*$/', '', $json_response);
+        $json_response = trim( $json_response );
+
         // Parse JSON
         $parsed = json_decode( $json_response, true );
         if ( ! $parsed || ! isset( $parsed['title'] ) || ! isset( $parsed['description'] ) || ! isset( $parsed['keyword'] ) ) {

@@ -715,15 +715,20 @@ class Menu {
                                 fetch(ajaxurl, { method: 'POST', body: pfd })
                                     .then(r => r.json())
                                     .then(pres => {
+                                        if ( !pres.success ) {
+                                            console.error('Error on post ' + postId + ':', pres.data);
+                                            statusBar.innerText = 'Error on post ' + postId + '. Retrying next...';
+                                        } else {
+                                            statusBar.innerText = 'Wait: API rate limiting...';
+                                        }
                                         currentIndex++;
                                         progressBar.style.width = ((currentIndex / totalPosts) * 100) + '%';
                                         
                                         // Wait 5 seconds before next request to respect 15 RPM free limit
-                                        statusBar.innerText = 'Waiting 5 seconds for API rate limit...';
                                         setTimeout(processNextPost, 5000);
                                     })
                                     .catch(err => {
-                                        console.error('Error on post ' + postId, err);
+                                        console.error('Fetch error on post ' + postId, err);
                                         currentIndex++;
                                         setTimeout(processNextPost, 5000); // Skip and continue
                                     });
