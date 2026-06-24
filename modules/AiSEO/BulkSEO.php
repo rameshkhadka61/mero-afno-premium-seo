@@ -151,9 +151,6 @@ class BulkSEO {
                                 [ 'text' => $prompt ]
                             ]
                         ]
-                    ],
-                    'generationConfig' => [
-                        'responseMimeType' => 'application/json'
                     ]
                 ]),
                 'timeout' => 20,
