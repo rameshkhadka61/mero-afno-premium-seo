@@ -46,6 +46,9 @@ class Plugin {
         $ai_seo = new \ESEO\Modules\AiSEO\AiSEO();
         $ai_seo->init();
 
+        $bulk_seo = new \ESEO\Modules\AiSEO\BulkSEO();
+        $bulk_seo->init();
+
         $breadcrumbs = new \ESEO\Modules\Breadcrumbs\Breadcrumbs();
         $breadcrumbs->init();
 

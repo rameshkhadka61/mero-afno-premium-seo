@@ -498,8 +498,22 @@ class Menu {
             <div class="eseo-grid" style="grid-template-columns: 1fr;">
                 <!-- Real SEO Scores Card -->
                 <div class="eseo-card">
-                    <h2>SEO scores (Real Data)</h2>
+                    <h2 style="display:flex; justify-content:space-between;">
+                        SEO scores (Real Data)
+                        <button type="button" id="eseo-bulk-optimize-btn" class="button button-primary">Bulk AI Optimize</button>
+                    </h2>
                     <p style="color:#50575e; font-size:13px;">This analyzes the presence of your SEO Title, Meta Description, and Focus Keyword across all published content.</p>
+                    
+                    <div id="eseo-bulk-progress-container" style="display:none; margin-top:15px; background:#f0f0f1; border-radius:4px; padding:15px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                            <strong id="eseo-bulk-status">Initializing...</strong>
+                            <span id="eseo-bulk-count">0 / 0</span>
+                        </div>
+                        <div style="background:#e2e4e7; height:8px; border-radius:4px; overflow:hidden;">
+                            <div id="eseo-bulk-progress-bar" style="background:#00a32a; height:100%; width:0%; transition:width 0.3s;"></div>
+                        </div>
+                        <p style="margin:5px 0 0 0; font-size:12px; color:#d63638;"><strong>Warning:</strong> Do not close or refresh this tab while optimization is running.</p>
+                    </div>
                     <div class="eseo-scores-container" style="margin-top:20px;">
                         <ul class="eseo-scores-list">
                             <li>
@@ -641,6 +655,85 @@ class Menu {
                     plugins: { legend: { display: false } }
                 }
             });
+            
+            // Bulk Optimize Logic
+            const bulkBtn = document.getElementById('eseo-bulk-optimize-btn');
+            const progressContainer = document.getElementById('eseo-bulk-progress-container');
+            const statusBar = document.getElementById('eseo-bulk-status');
+            const countText = document.getElementById('eseo-bulk-count');
+            const progressBar = document.getElementById('eseo-bulk-progress-bar');
+            
+            if ( bulkBtn ) {
+                bulkBtn.addEventListener('click', function() {
+                    if ( !confirm('This will use your configured AI API key to generate SEO meta for all unanalyzed posts. It runs at 1 post every 5 seconds to respect free API limits. Proceed?') ) return;
+                    
+                    bulkBtn.disabled = true;
+                    progressContainer.style.display = 'block';
+                    statusBar.innerText = 'Fetching unanalyzed posts...';
+                    
+                    const fd = new FormData();
+                    fd.append('action', 'eseo_get_unanalyzed_posts');
+                    fd.append('nonce', '<?php echo wp_create_nonce("eseo_dashboard_nonce"); ?>');
+                    
+                    fetch(ajaxurl, { method: 'POST', body: fd })
+                        .then(r => r.json())
+                        .then(res => {
+                            if ( !res.success ) {
+                                alert('Error: ' + res.data);
+                                bulkBtn.disabled = false;
+                                return;
+                            }
+                            
+                            const postsToProcess = res.data;
+                            if ( postsToProcess.length === 0 ) {
+                                statusBar.innerText = 'All posts are already fully optimized!';
+                                countText.innerText = '0 / 0';
+                                progressBar.style.width = '100%';
+                                return;
+                            }
+                            
+                            let currentIndex = 0;
+                            const totalPosts = postsToProcess.length;
+                            
+                            function processNextPost() {
+                                if ( currentIndex >= totalPosts ) {
+                                    statusBar.innerText = 'Optimization Complete! Reloading...';
+                                    setTimeout(() => window.location.reload(), 2000);
+                                    return;
+                                }
+                                
+                                const postId = postsToProcess[currentIndex];
+                                statusBar.innerText = 'Optimizing post ID ' + postId + '...';
+                                countText.innerText = (currentIndex + 1) + ' / ' + totalPosts;
+                                progressBar.style.width = ((currentIndex / totalPosts) * 100) + '%';
+                                
+                                const pfd = new FormData();
+                                pfd.append('action', 'eseo_bulk_optimize_post');
+                                pfd.append('nonce', '<?php echo wp_create_nonce("eseo_dashboard_nonce"); ?>');
+                                pfd.append('post_id', postId);
+                                
+                                fetch(ajaxurl, { method: 'POST', body: pfd })
+                                    .then(r => r.json())
+                                    .then(pres => {
+                                        currentIndex++;
+                                        progressBar.style.width = ((currentIndex / totalPosts) * 100) + '%';
+                                        
+                                        // Wait 5 seconds before next request to respect 15 RPM free limit
+                                        statusBar.innerText = 'Waiting 5 seconds for API rate limit...';
+                                        setTimeout(processNextPost, 5000);
+                                    })
+                                    .catch(err => {
+                                        console.error('Error on post ' + postId, err);
+                                        currentIndex++;
+                                        setTimeout(processNextPost, 5000); // Skip and continue
+                                    });
+                            }
+                            
+                            processNextPost();
+                        });
+                });
+            }
+
         });
         </script>
         <?php
