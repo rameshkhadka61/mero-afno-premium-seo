@@ -133,9 +133,7 @@ class Schema {
             '@graph' => $graph
         ];
 
-        echo "\n<!-- Mero Afno Premium SEO schema graph -->\n";
         echo '<script type="application/ld+json" class="eseo-schema-graph">' . wp_json_encode( $schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT ) . '</script>';
-        echo "\n<!-- / Mero Afno Premium SEO schema graph -->\n\n";
     }
 
     private function get_current_url() {
