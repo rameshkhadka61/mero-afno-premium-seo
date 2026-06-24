@@ -55,6 +55,15 @@ class Menu {
             [ $this, 'render_indexing_settings' ]
         );
 
+        add_submenu_page(
+            'enterprise-seo',
+            'Site Audit',
+            'Site Audit',
+            'manage_options',
+            'eseo-site-audit',
+            [ $this, 'render_site_audit' ]
+        );
+
         $migration_module = new \ESEO\Modules\Tools\Migration();
         add_submenu_page(
             'enterprise-seo',
@@ -894,5 +903,12 @@ class Menu {
             </form>
         </div>
         <?php
+    }
+
+    public function render_site_audit() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        include ESEO_PLUGIN_DIR . 'includes/Admin/Views/site-audit.php';
     }
 }
