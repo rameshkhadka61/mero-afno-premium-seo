@@ -27,7 +27,8 @@ class Settings {
                 <?php settings_fields( 'eseo_titles_meta_options' ); ?>
                 
                 <h2 class="nav-tab-wrapper">
-                    <a href="#tab-post-types" class="nav-tab nav-tab-active">Content Types</a>
+                    <a href="#tab-homepage" class="nav-tab nav-tab-active">Homepage</a>
+                    <a href="#tab-post-types" class="nav-tab">Content Types</a>
                     <a href="#tab-taxonomies" class="nav-tab">Taxonomies</a>
                     <a href="#tab-archives" class="nav-tab">Archives</a>
                 </h2>
@@ -35,8 +36,26 @@ class Settings {
                 <div style="background:#fff; border:1px solid #ccd0d4; padding:20px; margin-top:10px;">
                     <p class="description" style="margin-top:0;"><strong>Available Variables:</strong> %title%, %sitename%, %sitedesc%, %date%, %currentyear%, %currentmonth%, %category%, %excerpt%</p>
                 
+                    <!-- Homepage Tab -->
+                    <div id="tab-homepage" class="tab-content" style="display:block;">
+                        <div style="margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px;">
+                            <h3>Homepage SEO</h3>
+                            <p>Customize the SEO meta title and description specifically for your site's homepage to avoid length issues with the default Site Title and Tagline.</p>
+                            <table class="form-table">
+                                <tr>
+                                    <th scope="row"><label>Homepage SEO Title</label></th>
+                                    <td><input type="text" name="eseo_titles_meta_settings[homepage_title]" value="<?php echo esc_attr(isset($settings['homepage_title']) ? $settings['homepage_title'] : '%sitename% - %sitedesc%'); ?>" class="regular-text" style="width:100%;"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row"><label>Homepage Meta Description</label></th>
+                                    <td><textarea name="eseo_titles_meta_settings[homepage_desc]" rows="2" style="width:100%;"><?php echo esc_textarea(isset($settings['homepage_desc']) ? $settings['homepage_desc'] : '%sitedesc%'); ?></textarea></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
                     <!-- Post Types Tab -->
-                    <div id="tab-post-types" class="tab-content" style="display:block;">
+                    <div id="tab-post-types" class="tab-content" style="display:none;">
                         <?php foreach ( $post_types as $pt ) : 
                             if ( $pt->name === 'attachment' ) continue;
                             

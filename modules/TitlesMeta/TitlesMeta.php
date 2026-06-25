@@ -250,7 +250,13 @@ class TitlesMeta {
     public function filter_title_parts( $title_parts ) {
         $settings = get_option( 'eseo_titles_meta_settings', [] );
 
-        if ( is_singular() ) {
+        if ( is_front_page() || is_home() ) {
+            $homepage_title = isset($settings['homepage_title']) ? $settings['homepage_title'] : '';
+            if ( ! empty( $homepage_title ) ) {
+                $title_parts['title'] = $this->parse_variables( $homepage_title, 0, 'homepage' );
+                unset( $title_parts['site'], $title_parts['tagline'] );
+            }
+        } elseif ( is_singular() ) {
             $post_id = get_the_ID();
             $post_type = get_post_type( $post_id );
             $custom_title = get_post_meta( $post_id, '_eseo_meta_title', true );
@@ -292,7 +298,12 @@ class TitlesMeta {
     public function output_meta_tags() {
         $settings = get_option( 'eseo_titles_meta_settings', [] );
 
-        if ( is_singular() ) {
+        if ( is_front_page() || is_home() ) {
+            $homepage_desc = isset($settings['homepage_desc']) ? $settings['homepage_desc'] : '';
+            if ( ! empty( $homepage_desc ) ) {
+                echo '<meta name="description" content="' . esc_attr( $this->parse_variables( $homepage_desc, 0, 'homepage' ) ) . '" />' . "\n";
+            }
+        } elseif ( is_singular() ) {
             $post_id = get_the_ID();
             $post_type = get_post_type( $post_id );
             
@@ -398,6 +409,10 @@ class TitlesMeta {
                 $replacements['%title%'] = $term->name;
                 $replacements['%excerpt%'] = wp_strip_all_tags( $term->description );
             }
+        } elseif ( $type === 'homepage' ) {
+            $replacements['%title%'] = get_bloginfo( 'name' );
+            $replacements['%excerpt%'] = get_bloginfo( 'description' );
+        }
         } elseif ( $type === 'author' ) {
             $author = get_userdata( $object_id );
             if ( $author ) {
