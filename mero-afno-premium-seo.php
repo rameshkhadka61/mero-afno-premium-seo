@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       Mero Afno Premium SEO
+ * Plugin Name:       Mero SEO
  * Plugin URI:        https://www.rameskhadka.com.np
  * Description:       An enterprise-level, highly optimized SEO plugin with integrated AI, advanced Schema, XML Sitemaps, and Content Auditing.
- * Version:           1.1.30
+ * Version:           1.1.31
  * Author:            Ramesh Khadka
  * Author URI:        https://www.rameskhadka.com.np
  * Text Domain:       mero-afno-premium-seo

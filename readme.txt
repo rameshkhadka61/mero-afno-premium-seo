@@ -1,4 +1,4 @@
-=== Mero Afno Premium SEO ===
+=== Mero SEO ===
 Contributors: rameshkhadka
 Tags: seo
 Requires at least: 5.0

@@ -112,7 +112,7 @@ class TitlesMeta {
         foreach ( $screens as $screen ) {
             add_meta_box(
                 'eseo_meta_box',
-                'Mero Afno Premium SEO',
+                'Mero SEO',
                 [ $this, 'render_seo_meta_box' ],
                 $screen,
                 'normal',

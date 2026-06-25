@@ -12,7 +12,7 @@ class Migration {
         ?>
         <div class="wrap" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif;">
             <h1>Migration & Tools</h1>
-            <p>Safely import your historical SEO metadata from other plugins into Mero Afno Premium SEO.</p>
+            <p>Safely import your historical SEO metadata from other plugins into Mero SEO.</p>
             
             <div style="background:#fff; border:1px solid #ccd0d4; border-radius:6px; padding:20px; max-width: 800px; margin-top: 20px;">
                 <h2 style="margin-top:0;">SEO Data Importer</h2>

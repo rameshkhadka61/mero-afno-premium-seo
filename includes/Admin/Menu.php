@@ -19,8 +19,8 @@ class Menu {
 
     public function register_admin_menu() {
         add_menu_page(
-            'Mero Afno Premium SEO',
-            'Mero Afno Premium SEO',
+            'Mero SEO',
+            'Mero SEO',
             'manage_options',
             'enterprise-seo',
             [ $this, 'render_dashboard' ],
@@ -334,7 +334,7 @@ class Menu {
 
         <div class="eseo-wrap">
             <div class="eseo-header">
-                <h1>Mero Afno Premium SEO Dashboard</h1>
+                <h1>Mero SEO Dashboard</h1>
                 <p style="color: #50575e; margin: 0;">Monitor your search performance and site health.</p>
                 <?php if ( ! $gsc_data ) : ?>
                     <div style="background:#fff; border-left:4px solid #e88a31; padding:12px; margin-top:15px; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
@@ -752,7 +752,7 @@ class Menu {
         }
         ?>
         <div class="wrap">
-            <h1>Mero Afno Premium SEO Settings</h1>
+            <h1>Mero SEO Settings</h1>
             <p>Configure your API keys and toggle plugin features.</p>
             <form method="post" action="options.php">
                 <?php settings_fields( 'eseo_ai_options' ); ?>
