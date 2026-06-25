@@ -8,13 +8,27 @@ class Menu {
         add_action( 'admin_menu', [ $this, 'register_admin_menu' ] );
         add_action( 'admin_init', [ $this, 'register_settings' ] );
         add_action( 'save_post', [ $this, 'clear_dashboard_transients' ] );
+        add_action( 'admin_post_eseo_force_refresh_dashboard', [ $this, 'force_refresh_dashboard' ] );
     }
 
-    public function clear_dashboard_transients( $post_id ) {
+    public function clear_dashboard_transients( $post_id = null ) {
         if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
             return;
         }
         delete_transient( 'eseo_dashboard_scores' );
+        delete_transient( 'eseo_dashboard_redirects_count' );
+        delete_transient( 'eseo_dashboard_links_count' );
+        delete_transient( 'eseo_gsc_analytics_data' );
+    }
+
+    public function force_refresh_dashboard() {
+        check_admin_referer( 'eseo_refresh_dashboard_nonce' );
+        if ( ! current_user_can( 'manage_options' ) ) wp_die( 'Unauthorized' );
+
+        $this->clear_dashboard_transients();
+
+        wp_redirect( admin_url( 'admin.php?page=mero-seo&refreshed=1' ) );
+        exit;
     }
 
     public function register_admin_menu() {
@@ -334,8 +348,24 @@ class Menu {
 
         <div class="eseo-wrap">
             <div class="eseo-header">
-                <h1>Mero SEO Dashboard</h1>
-                <p style="color: #50575e; margin: 0;">Monitor your search performance and site health.</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px;">
+                    <div>
+                        <h1 style="margin-bottom:6px;">Mero SEO Dashboard</h1>
+                        <p style="color: #50575e; margin: 0;">Monitor your search performance and site health.</p>
+                    </div>
+                    <form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>">
+                        <input type="hidden" name="action" value="eseo_force_refresh_dashboard">
+                        <?php wp_nonce_field( 'eseo_refresh_dashboard_nonce' ); ?>
+                        <button type="submit" class="button button-primary" style="display:inline-flex; align-items:center; gap:6px; padding: 4px 14px; height: auto;">
+                            <span>🔄</span> Force Refresh Dashboard &amp; Analytics
+                        </button>
+                    </form>
+                </div>
+                <?php if ( isset( $_GET['refreshed'] ) ) : ?>
+                    <div style="background:#fff; border-left:4px solid #00a32a; padding:12px; margin-top:15px; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                        <strong style="color:#00a32a;">✓ Success:</strong> All dashboard metrics, link counts, and Google Search Console cache have been forced to refresh!
+                    </div>
+                <?php endif; ?>
                 <?php if ( ! $gsc_data ) : ?>
                     <div style="background:#fff; border-left:4px solid #e88a31; padding:12px; margin-top:15px; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
                         <strong>Analytics Not Connected:</strong> The data below is mock data. <a href="<?php echo admin_url('admin.php?page=eseo-analytics'); ?>">Connect Google Search Console</a> to view real data.

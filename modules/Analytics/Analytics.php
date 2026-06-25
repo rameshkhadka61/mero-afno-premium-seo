@@ -99,7 +99,10 @@ class Analytics {
         $start_date = date( 'Y-m-d', strtotime('-30 days') );
 
         // Natively hook into Site Kit's REST API using WordPress loopback
+        $rest_nonce = wp_create_nonce( 'wp_rest' );
+
         $request_date = new \WP_REST_Request( 'GET', '/google-site-kit/v1/modules/search-console/data/searchanalytics' );
+        $request_date->set_header( 'X-WP-Nonce', $rest_nonce );
         $request_date->set_query_params([
             'startDate' => $start_date,
             'endDate' => $end_date,
@@ -109,6 +112,7 @@ class Analytics {
         $response_date = rest_do_request( $request_date );
 
         $request_pages = new \WP_REST_Request( 'GET', '/google-site-kit/v1/modules/search-console/data/searchanalytics' );
+        $request_pages->set_header( 'X-WP-Nonce', $rest_nonce );
         $request_pages->set_query_params([
             'startDate' => $start_date,
             'endDate' => $end_date,
@@ -118,6 +122,7 @@ class Analytics {
         $response_pages = rest_do_request( $request_pages );
 
         $request_queries = new \WP_REST_Request( 'GET', '/google-site-kit/v1/modules/search-console/data/searchanalytics' );
+        $request_queries->set_header( 'X-WP-Nonce', $rest_nonce );
         $request_queries->set_query_params([
             'startDate' => $start_date,
             'endDate' => $end_date,
