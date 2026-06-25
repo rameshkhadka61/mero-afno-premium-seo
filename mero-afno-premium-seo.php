@@ -3,7 +3,7 @@
  * Plugin Name:       Mero Afno Premium SEO
  * Plugin URI:        https://www.rameskhadka.com.np
  * Description:       An enterprise-level, highly optimized SEO plugin with integrated AI, advanced Schema, XML Sitemaps, and Content Auditing.
- * Version:           1.1.29
+ * Version:           1.1.30
  * Author:            Ramesh Khadka
  * Author URI:        https://www.rameskhadka.com.np
  * Text Domain:       mero-afno-premium-seo
@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'ESEO_VERSION', '1.1.29' );
+define( 'ESEO_VERSION', '1.1.28' );
 define( 'ESEO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ESEO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -66,7 +66,7 @@ $myUpdateChecker = PucFactory::buildUpdateChecker(
 );
 // Optional: If you use a specific branch for releases
 $myUpdateChecker->setBranch('main');
-
+// $myUpdateChecker->setAuthentication('your-token-here');
 /**
  * The core plugin class that is used to define internationalization,
  * admin-specific hooks, and public-facing site hooks.

@@ -341,13 +341,6 @@ class TitlesMeta {
                 echo '<meta name="description" content="' . esc_attr( $this->parse_variables( $custom_desc, $post_id, 'post' ) ) . '" />' . "\n";
             }
 
-            // Output Canonical URL
-            $canonical = get_post_meta( $post_id, '_eseo_canonical_url', true );
-            if ( ! empty( $canonical ) ) {
-                remove_action( 'wp_head', 'rel_canonical' );
-                echo '<link rel="canonical" href="' . esc_url( $canonical ) . '" />' . "\n";
-            }
-
             // Output Meta Robots
             $robots_index = get_post_meta( $post_id, '_eseo_meta_robots_index', true );
             if ( empty($robots_index) || $robots_index === 'default' ) {
@@ -392,6 +385,32 @@ class TitlesMeta {
                     echo '<meta name="robots" content="noindex, follow" />' . "\n";
                 }
             }
+        }
+
+        // Output Universal Canonical URL
+        remove_action( 'wp_head', 'rel_canonical' );
+        $canonical_url = '';
+        if ( is_singular() ) {
+            $canonical_url = get_post_meta( get_the_ID(), '_eseo_canonical_url', true );
+            if ( empty( $canonical_url ) ) {
+                $canonical_url = get_permalink();
+            }
+        } elseif ( is_front_page() ) {
+            $canonical_url = home_url( '/' );
+        } elseif ( is_home() && $page_for_posts = get_option( 'page_for_posts' ) ) {
+            $canonical_url = get_permalink( $page_for_posts );
+        } elseif ( is_category() || is_tag() || is_tax() ) {
+            $canonical_url = get_term_link( get_queried_object() );
+        } elseif ( is_post_type_archive() ) {
+            $canonical_url = get_post_type_archive_link( get_query_var( 'post_type' ) );
+        } elseif ( is_author() ) {
+            $canonical_url = get_author_posts_url( get_queried_object_id() );
+        } else {
+            $canonical_url = home_url( wp_parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) );
+        }
+
+        if ( ! is_wp_error( $canonical_url ) && ! empty( $canonical_url ) ) {
+            echo '<link rel="canonical" href="' . esc_url( $canonical_url ) . '" />' . "\n";
         }
     }
 
