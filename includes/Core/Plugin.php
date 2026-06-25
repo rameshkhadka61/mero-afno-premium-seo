@@ -11,7 +11,7 @@ class Plugin {
 	protected $version;
 
 	public function __construct() {
-		$this->plugin_name = 'enterprise-seo';
+		$this->plugin_name = 'mero-seo';
 		$this->version = ESEO_VERSION;
 
 		$this->load_dependencies();

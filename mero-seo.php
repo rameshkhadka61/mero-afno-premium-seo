@@ -3,10 +3,10 @@
  * Plugin Name:       Mero SEO
  * Plugin URI:        https://www.rameskhadka.com.np
  * Description:       An enterprise-level, highly optimized SEO plugin with integrated AI, advanced Schema, XML Sitemaps, and Content Auditing.
- * Version:           1.1.31
+ * Version:           1.1.32
  * Author:            Ramesh Khadka
  * Author URI:        https://www.rameskhadka.com.np
- * Text Domain:       mero-afno-premium-seo
+ * Text Domain:       mero-seo
  * Domain Path:       /languages
  */
 
@@ -60,9 +60,9 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/updater/plugin-update-check
 use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
 
 $myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/rameshkhadka61/mero-afno-premium-seo/',
+	'https://github.com/rameshkhadka61/mero-seo/',
 	__FILE__,
-	'mero-afno-premium-seo'
+	'mero-seo'
 );
 // Optional: If you use a specific branch for releases
 $myUpdateChecker->setBranch('main');

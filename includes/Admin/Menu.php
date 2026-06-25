@@ -22,23 +22,23 @@ class Menu {
             'Mero SEO',
             'Mero SEO',
             'manage_options',
-            'enterprise-seo',
+            'mero-seo',
             [ $this, 'render_dashboard' ],
             'dashicons-chart-line',
             80
         );
 
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Dashboard',
             'Dashboard',
             'manage_options',
-            'enterprise-seo',
+            'mero-seo',
             [ $this, 'render_dashboard' ]
         );
 
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'AI Settings',
             'AI Settings',
             'manage_options',
@@ -47,7 +47,7 @@ class Menu {
         );
 
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Indexing API',
             'Indexing API',
             'manage_options',
@@ -57,7 +57,7 @@ class Menu {
 
         $migration_module = new \ESEO\Modules\Tools\Migration();
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Tools & Migration',
             'Tools & Migration',
             'manage_options',
@@ -67,7 +67,7 @@ class Menu {
 
         $analytics_module = new \ESEO\Modules\Analytics\Analytics();
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Search Console',
             'Search Console',
             'manage_options',
@@ -77,7 +77,7 @@ class Menu {
 
         $titles_settings = new \ESEO\Modules\TitlesMeta\Settings();
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Search Appearance',
             'Search Appearance',
             'manage_options',
@@ -87,7 +87,7 @@ class Menu {
 
         $schema_settings = new \ESEO\Modules\Schema\Settings();
         add_submenu_page(
-            'enterprise-seo',
+            'mero-seo',
             'Schema Settings',
             'Schema Settings',
             'manage_options',
