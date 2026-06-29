@@ -14,14 +14,14 @@ class Activator {
         
         $sql1 = "CREATE TABLE $table_name (
             id bigint(20) NOT NULL AUTO_INCREMENT,
-            url_from varchar(255) NOT NULL,
+            url_from varchar(191) NOT NULL,
             url_to varchar(255) NOT NULL,
             type varchar(10) DEFAULT '301' NOT NULL,
             status varchar(20) DEFAULT 'active' NOT NULL,
             hits int(11) DEFAULT 0 NOT NULL,
             last_accessed datetime NULL,
             PRIMARY KEY  (id),
-            KEY url_from (url_from)
+            KEY url_from (url_from(191))
         ) $charset_collate;";
 
         // Internal Links Table
@@ -42,13 +42,13 @@ class Activator {
         $logs_table_name = $wpdb->prefix . 'eseo_404_logs';
         $sql3 = "CREATE TABLE $logs_table_name (
             id bigint(20) NOT NULL AUTO_INCREMENT,
-            url varchar(255) NOT NULL,
+            url varchar(191) NOT NULL,
             referrer varchar(255) DEFAULT '' NOT NULL,
             user_agent varchar(255) DEFAULT '' NOT NULL,
             hits int(11) DEFAULT 1 NOT NULL,
             last_accessed datetime NULL,
             PRIMARY KEY  (id),
-            KEY url (url)
+            KEY url (url(191))
         ) $charset_collate;";
 
         require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
