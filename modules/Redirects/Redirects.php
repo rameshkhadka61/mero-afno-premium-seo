@@ -233,7 +233,7 @@ class Redirects {
                         <td><a href="<?php echo esc_url($row->url_to); ?>" target="_blank"><code><?php echo esc_html($row->url_to); ?></code></a></td>
                         <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;"><?php echo esc_html($row->type); ?></span></td>
                         <td><strong><?php echo intval($row->hits); ?></strong></td>
-                        <td><?php echo $row->last_accessed !== '0000-00-00 00:00:00' ? esc_html($row->last_accessed) : 'Never'; ?></td>
+                        <td><?php echo ! empty($row->last_accessed) && $row->last_accessed !== '0000-00-00 00:00:00' ? esc_html($row->last_accessed) : 'Never'; ?></td>
                         <td>
                             <a href="<?php echo wp_nonce_url( admin_url('admin.php?page=eseo-redirects&delete_redirect='.$row->id), 'delete_redirect_'.$row->id ); ?>" class="button button-small" style="color:#b32d2e; border-color:#b32d2e;" onclick="return confirm('Delete this redirect rule?');">Delete</a>
                         </td>
