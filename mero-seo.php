@@ -3,7 +3,7 @@
  * Plugin Name:       Mero SEO
  * Plugin URI:        https://www.rameskhadka.com.np
  * Description:       An enterprise-level, highly optimized SEO plugin with integrated AI, advanced Schema, XML Sitemaps, and Content Auditing.
- * Version:           1.2.8
+ * Version:           1.2.9
  * Author:            Ramesh Khadka
  * Author URI:        https://www.rameskhadka.com.np
  * Text Domain:       mero-seo
@@ -15,7 +15,7 @@ if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
-define( 'ESEO_VERSION', '1.2.8' );
+define( 'ESEO_VERSION', '1.2.9' );
 define( 'ESEO_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'ESEO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

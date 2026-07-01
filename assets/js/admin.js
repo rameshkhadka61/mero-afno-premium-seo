@@ -58,7 +58,10 @@ jQuery(document).ready(function($) {
     function updateSocialPreview(displayTitle, descVal, thumbUrl) {
         const socTitle = $('#eseo_social_title').val() || displayTitle || 'Your Post Title';
         const socDesc = $('#eseo_social_description').val() || descVal || 'Your post description preview will appear here.';
-        const socImg = $('#eseo_social_image').val() || thumbUrl;
+        let socImg = $('#eseo_social_image').val() || thumbUrl;
+        if (socImg && typeof socImg === 'string') {
+            socImg = socImg.replace(/-\d+x\d+(?=\.[a-zA-Z]{3,4}($|\?))/i, '');
+        }
 
         $('#eseo-fb-title-preview, #eseo-tw-title-preview').text(socTitle);
         $('#eseo-fb-desc-preview, #eseo-tw-desc-preview').text(socDesc);
@@ -111,13 +114,15 @@ jQuery(document).ready(function($) {
             const featuredImageId = wp.data.select('core/editor').getEditedPostAttribute('featured_media');
             hasFeaturedImage = featuredImageId && featuredImageId > 0;
             if (hasFeaturedImage) {
-                const $editorImg = $('.editor-post-featured-image__preview img, .components-responsive-wrapper__content');
-                if ($editorImg.length && $editorImg.attr('src')) {
-                    thumbUrl = $editorImg.attr('src');
+                const media = wp.data.select('core').getMedia(featuredImageId);
+                if (media && media.source_url) {
+                    thumbUrl = media.source_url;
+                } else if (media && media.media_details && media.media_details.sizes && media.media_details.sizes.full) {
+                    thumbUrl = media.media_details.sizes.full.source_url;
                 } else {
-                    const media = wp.data.select('core').getMedia(featuredImageId);
-                    if (media && media.source_url) {
-                        thumbUrl = media.source_url;
+                    const $editorImg = $('.editor-post-featured-image__preview img, .components-responsive-wrapper__content');
+                    if ($editorImg.length && $editorImg.attr('src')) {
+                        thumbUrl = $editorImg.attr('src');
                     }
                 }
             }
@@ -130,6 +135,10 @@ jQuery(document).ready(function($) {
                     thumbUrl = $classicImg.attr('src');
                 }
             }
+        }
+
+        if (thumbUrl && typeof thumbUrl === 'string') {
+            thumbUrl = thumbUrl.replace(/-\d+x\d+(?=\.[a-zA-Z]{3,4}($|\?))/i, '');
         }
 
         if (hasFeaturedImage && thumbUrl) {
@@ -408,4 +417,8 @@ jQuery(document).ready(function($) {
             localStorage.setItem('eseo_dark_mode', '1');
         }
     });
+
+    analyzeSEO();
+    setTimeout(analyzeSEO, 600);
+    setTimeout(analyzeSEO, 2000);
 });
