@@ -186,11 +186,18 @@
     height: 120px;
     border-radius: 8px;
     background-size: contain;
-    background-position: center top;
+    background-position: center center;
     background-repeat: no-repeat;
     background-color: transparent;
     flex-shrink: 0;
     border: 1px solid #dfe1e5;
+}
+
+.eseo-fb-img,
+.eseo-tw-img {
+    background-size: contain !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
 }
 
 /* SERP Toggle Bar */

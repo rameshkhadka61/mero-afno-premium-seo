@@ -251,7 +251,7 @@ class TitlesMeta {
                 <div class="eseo-field">
                     <label><strong>Live Facebook / WhatsApp Share Card Preview</strong></label>
                     <div class="eseo-fb-preview" style="border:1px solid #dadde1; border-radius:8px; overflow:hidden; max-width:500px; background:#f0f2f5; margin-top:8px;">
-                        <div class="eseo-fb-img" id="eseo-fb-img-preview" style="height:260px; background:#e4e6eb; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; color:#8d949e; font-weight:bold;">No Image Selected</div>
+                        <div class="eseo-fb-img" id="eseo-fb-img-preview" style="height:260px; background-color:#e4e6eb; background-size:contain; background-position:center center; background-repeat:no-repeat; display:flex; align-items:center; justify-content:center; color:#8d949e; font-weight:bold;">No Image Selected</div>
                         <div style="padding:12px; background:#fff; border-top:1px solid #dadde1;">
                             <div style="font-size:12px; text-transform:uppercase; color:#606770;" id="eseo-fb-domain-preview"><?php echo esc_html( parse_url( get_site_url(), PHP_URL_HOST ) ); ?></div>
                             <div style="font-size:16px; font-weight:bold; color:#1d2129; margin:4px 0;" id="eseo-fb-title-preview">Your Post Title</div>
@@ -263,7 +263,7 @@ class TitlesMeta {
                 <div class="eseo-field" style="margin-top:10px;">
                     <label><strong>Live X (Twitter) Card Preview</strong></label>
                     <div class="eseo-tw-preview" style="border:1px solid #cfd9de; border-radius:16px; overflow:hidden; max-width:500px; background:#fff; margin-top:8px;">
-                        <div class="eseo-tw-img" id="eseo-tw-img-preview" style="height:260px; background:#f7f9f9; background-size:cover; background-position:center; display:flex; align-items:center; justify-content:center; color:#536471; font-weight:bold;">No Image Selected</div>
+                        <div class="eseo-tw-img" id="eseo-tw-img-preview" style="height:260px; background-color:#f7f9f9; background-size:contain; background-position:center center; background-repeat:no-repeat; display:flex; align-items:center; justify-content:center; color:#536471; font-weight:bold;">No Image Selected</div>
                         <div style="padding:12px;">
                             <div style="font-size:15px; font-weight:bold; color:#0f1419; margin-bottom:2px;" id="eseo-tw-title-preview">Your Post Title</div>
                             <div style="font-size:14px; color:#536471;" id="eseo-tw-desc-preview">Your post description preview will appear here.</div>
