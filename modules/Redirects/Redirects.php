@@ -64,6 +64,9 @@ class Redirects {
                 'status' => 'active'
             ], [ 'id' => $exists ] );
         }
+
+        $table_404 = $wpdb->prefix . 'eseo_404_logs';
+        $wpdb->delete( $table_404, [ 'url' => $url_from ] );
     }
 
     public function intercept_404() {
@@ -131,20 +134,32 @@ class Redirects {
             $to   = sanitize_text_field( $_POST['url_to'] );
             $type = sanitize_text_field( $_POST['redirect_type'] );
             if ( $from && $to ) {
-                $wpdb->insert( $table_name, [
-                    'url_from' => $from,
-                    'url_to'   => $to,
-                    'type'     => $type,
-                    'status'   => 'active',
-                    'hits'     => 0
-                ] );
-                // If this was added from a 404 log, remove from 404 logs
+                if ( isset( $_POST['edit_redirect_id'] ) && intval( $_POST['edit_redirect_id'] ) > 0 ) {
+                    $edit_id = intval( $_POST['edit_redirect_id'] );
+                    $wpdb->update( $table_name, [
+                        'url_from' => $from,
+                        'url_to'   => $to,
+                        'type'     => $type
+                    ], [ 'id' => $edit_id ] );
+                    $redirect_param = 'updated=1';
+                } else {
+                    $wpdb->insert( $table_name, [
+                        'url_from' => $from,
+                        'url_to'   => $to,
+                        'type'     => $type,
+                        'status'   => 'active',
+                        'hits'     => 0
+                    ] );
+                    $redirect_param = 'added=1';
+                }
+                // Automatically remove matching link from 404 error monitor if added or edited in redirect manager
+                $table_404 = $wpdb->prefix . 'eseo_404_logs';
+                $wpdb->delete( $table_404, [ 'url' => $from ] );
                 if ( isset( $_POST['delete_404_id'] ) && intval( $_POST['delete_404_id'] ) > 0 ) {
-                    $table_404 = $wpdb->prefix . 'eseo_404_logs';
                     $wpdb->delete( $table_404, [ 'id' => intval( $_POST['delete_404_id'] ) ] );
                 }
             }
-            wp_redirect( admin_url( 'admin.php?page=eseo-redirects&added=1' ) );
+            wp_redirect( admin_url( 'admin.php?page=eseo-redirects&' . ( isset( $redirect_param ) ? $redirect_param : 'added=1' ) ) );
             exit;
         }
         if ( isset( $_GET['delete_redirect'] ) && isset( $_GET['_wpnonce'] ) && wp_verify_nonce( $_GET['_wpnonce'], 'delete_redirect_' . intval( $_GET['delete_redirect'] ) ) ) {
@@ -180,9 +195,22 @@ class Redirects {
                 <a href="<?php echo admin_url('admin.php?page=eseo-redirects&tab=404s'); ?>" class="nav-tab <?php echo $tab === '404s' ? 'nav-tab-active' : ''; ?>">🚨 404 Error Monitor (<?php echo count($logs_404); ?>)</a>
             </h2>
 
+            <?php if ( isset( $_GET['added'] ) ): ?>
+                <div class="notice notice-success is-dismissible"><p>✅ <strong>Redirect rule added successfully!</strong> Any matching 404 error logs have been automatically removed.</p></div>
+            <?php elseif ( isset( $_GET['updated'] ) ): ?>
+                <div class="notice notice-success is-dismissible"><p>💾 <strong>Redirect rule updated successfully!</strong> Any matching 404 error logs have been automatically removed.</p></div>
+            <?php elseif ( isset( $_GET['deleted'] ) ): ?>
+                <div class="notice notice-success is-dismissible"><p>🗑️ <strong>Redirect rule deleted.</strong></p></div>
+            <?php elseif ( isset( $_GET['cleared'] ) ): ?>
+                <div class="notice notice-success is-dismissible"><p>🧹 <strong>All 404 logs cleared!</strong></p></div>
+            <?php endif; ?>
+
             <?php if ( $tab === 'redirects' ): ?>
-            <div style="background:#fff; padding:20px; border:1px solid #ccd0d4; border-radius:8px; margin-bottom:20px;">
-                <h3 style="margin-top:0;">Add New Redirect Rule</h3>
+            <div id="eseo_redirect_form_box" style="background:#fff; padding:20px; border:1px solid #ccd0d4; border-radius:8px; margin-bottom:20px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                    <h3 id="eseo_form_title" style="margin:0;">Add New Redirect Rule</h3>
+                    <button type="button" id="eseo_cancel_edit_btn" class="button button-secondary" style="display:none; color:#b32d2e;">❌ Cancel Edit</button>
+                </div>
                 <form method="post" action="">
                     <?php wp_nonce_field( 'eseo_redirects_action' ); ?>
                     <div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
@@ -205,7 +233,8 @@ class Redirects {
                         </div>
                         <div>
                             <input type="hidden" name="delete_404_id" id="eseo_delete_404_id" value="0" />
-                            <button type="submit" name="eseo_add_redirect" class="button button-primary" style="height:30px;">+ Add Redirect</button>
+                            <input type="hidden" name="edit_redirect_id" id="eseo_edit_redirect_id" value="0" />
+                            <button type="submit" name="eseo_add_redirect" id="eseo_submit_btn" class="button button-primary" style="height:30px;">+ Add Redirect</button>
                         </div>
                     </div>
                 </form>
@@ -220,7 +249,7 @@ class Redirects {
                         <th>Type</th>
                         <th>Hits</th>
                         <th>Last Accessed</th>
-                        <th style="width:100px;">Actions</th>
+                        <th style="width:130px;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -235,6 +264,7 @@ class Redirects {
                         <td><strong><?php echo intval($row->hits); ?></strong></td>
                         <td><?php echo ! empty($row->last_accessed) && $row->last_accessed !== '0000-00-00 00:00:00' ? esc_html($row->last_accessed) : 'Never'; ?></td>
                         <td>
+                            <button type="button" class="button button-small eseo-edit-redirect-btn" data-id="<?php echo intval($row->id); ?>" data-from="<?php echo esc_attr($row->url_from); ?>" data-to="<?php echo esc_attr($row->url_to); ?>" data-type="<?php echo esc_attr($row->type); ?>" style="margin-right:4px;">Edit</button>
                             <a href="<?php echo wp_nonce_url( admin_url('admin.php?page=eseo-redirects&delete_redirect='.$row->id), 'delete_redirect_'.$row->id ); ?>" class="button button-small" style="color:#b32d2e; border-color:#b32d2e;" onclick="return confirm('Delete this redirect rule?');">Delete</a>
                         </td>
                     </tr>
@@ -276,22 +306,54 @@ class Redirects {
                     <?php endforeach; endif; ?>
                 </tbody>
             </table>
+            <?php endif; ?>
             <script>
             jQuery(document).ready(function($){
+                $('.eseo-edit-redirect-btn').on('click', function(){
+                    var id = $(this).data('id');
+                    var from = $(this).data('from');
+                    var to = $(this).data('to');
+                    var type = $(this).data('type');
+                    
+                    $('#eseo_form_title').html('Edit Redirect Rule <span style="font-size:14px; font-weight:normal; color:#666;">(ID: ' + id + ')</span>');
+                    $('#eseo_cancel_edit_btn').show();
+                    $('input[name="url_from"]').val(from);
+                    $('input[name="url_to"]').val(to);
+                    $('select[name="redirect_type"]').val(type);
+                    $('#eseo_edit_redirect_id').val(id);
+                    $('#eseo_submit_btn').html('💾 Update Redirect');
+                    
+                    $('html, body').animate({ scrollTop: $('#eseo_redirect_form_box').offset().top - 40 }, 300);
+                });
+
+                $('#eseo_cancel_edit_btn').on('click', function(){
+                    $('#eseo_form_title').text('Add New Redirect Rule');
+                    $(this).hide();
+                    $('input[name="url_from"]').val('');
+                    $('input[name="url_to"]').val('');
+                    $('select[name="redirect_type"]').val('301');
+                    $('#eseo_edit_redirect_id').val('0');
+                    $('#eseo_submit_btn').html('+ Add Redirect');
+                });
+
                 $('.eseo-quick-redirect-btn').on('click', function(){
                     var url = $(this).data('url');
                     var id = $(this).data('id');
                     var target = prompt('Enter destination URL or path to redirect /' + url + ' to:', '/');
                     if (target) {
-                        $('input[name="url_from"]').val(url);
-                        $('input[name="url_to"]').val(target);
-                        $('#eseo_delete_404_id').val(id);
-                        window.location.href = '<?php echo admin_url('admin.php?page=eseo-redirects&tab=redirects'); ?>';
+                        var form = $('<form method="post" action=""></form>');
+                        form.append('<?php echo wp_nonce_field( 'eseo_redirects_action', '_wpnonce', true, false ); ?>');
+                        form.append('<input type="hidden" name="url_from" value="' + url + '" />');
+                        form.append('<input type="hidden" name="url_to" value="' + target + '" />');
+                        form.append('<input type="hidden" name="redirect_type" value="301" />');
+                        form.append('<input type="hidden" name="delete_404_id" value="' + id + '" />');
+                        form.append('<input type="hidden" name="eseo_add_redirect" value="1" />');
+                        $('body').append(form);
+                        form.submit();
                     }
                 });
             });
             </script>
-            <?php endif; ?>
         </div>
         <?php
     }
